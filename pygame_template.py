@@ -42,6 +42,7 @@ class GameView:
         WIN.fill(AppColors.WHITE)
         WIN.blit(self.player.image, (self.player.rect.x, self.player.rect.y))
         pygame.display.update()
+        print("hello")
         
     def handle_events(self):
         for event in pygame.event.get():
