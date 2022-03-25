@@ -20,17 +20,13 @@ class Player():
         self.height = AppConfig.PLAYER_HEIGHT
         self.rect = pygame.Rect(starting_x, starting_y, self.width, self.height)
         self.image = AppAssets.player
-
-
-        self.gravity=9.81/3
-        self.run_speed=1
-        self.jump_speed=4
-        self.run_acceleration=0
+        self.gravity = AppConfig.GRAVITY
+        self.run_speed = 1
+        self.jump_speed = 4
+        self.run_acceleration = 0
 
 # Right :1 / Left :-1
-        self.moving_direction=0
-
-
+        self.moving_direction = 0
 
 
 
@@ -44,12 +40,9 @@ class GameView:
         self.game_loop()
 
 
-
-        
     def game_loop(self):
         while self.is_running:
             CLOCK.tick(AppConfig.FPS)
-
 
             #self.gravity()
             self.handle_events()
@@ -57,10 +50,7 @@ class GameView:
             self.redraw_window()
 
 
-
-            
     def redraw_window(self):
-
 
         WIN.fill(AppColors.WHITE)
         WIN.blit(self.player.image, (self.player.rect.x, self.player.rect.y))
@@ -69,7 +59,7 @@ class GameView:
 
 #Gravity
     def gravity(self):
-        self.player.rect.y+=self.player.gravity
+        self.player.rect.y += self.player.gravity
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -85,29 +75,29 @@ class GameView:
 
         if pressed_keys[pygame.K_RIGHT]:
 
-            if self.player.rect.x+self.player.run_speed+self.player.run_acceleration>AppConfig.SCREEN_WIDTH-AppConfig.PLAYER_WIDTH:
-                self.player.rect.x=AppConfig.SCREEN_WIDTH-AppConfig.PLAYER_WIDTH
+            if self.player.rect.x + self.player.run_speed + self.player.run_acceleration > AppConfig.SCREEN_WIDTH - AppConfig.PLAYER_WIDTH:
+                self.player.rect.x = AppConfig.SCREEN_WIDTH - AppConfig.PLAYER_WIDTH
                 self.player.run_acceleration = 0
             else:
-                self.player.rect.x += (self.player.run_speed + self.player.run_acceleration)
+                self.player.rect.x += self.player.run_speed + self.player.run_acceleration
 
-            if self.player.moving_direction==1:
-                self.player.run_acceleration+=0.2
+            if self.player.moving_direction == 1:
+                self.player.run_acceleration += 0.2
             else:
-                self.player.run_acceleration=0
+                self.player.run_acceleration = 0
             self.player.moving_direction = 1
 
         elif pressed_keys[pygame.K_LEFT]:
 
-            if self.player.rect.x-(self.player.run_speed + self.player.run_acceleration)<0:
-                self.player.rect.x=0
+            if self.player.rect.x - (self.player.run_speed + self.player.run_acceleration) < 0:
+                self.player.rect.x = 0
                 self.player.run_acceleration = 0
             else:
-                self.player.rect.x -= (self.player.run_speed + self.player.run_acceleration)
-            if self.player.moving_direction==-1:
-                self.player.run_acceleration+=0.2
+                self.player.rect.x -= self.player.run_speed + self.player.run_acceleration
+            if self.player.moving_direction == -1:
+                self.player.run_acceleration += 0.2
             else:
-                self.player.run_acceleration=0
+                self.player.run_acceleration = 0
 
             self.player.moving_direction = -1
 
@@ -117,7 +107,7 @@ class GameView:
 
 
 # Acceleretion =0 when player stoped
-        if  (pressed_keys[pygame.K_RIGHT]==False and self.player.moving_direction == 1) or (pressed_keys[pygame.K_LEFT] ==False and self.player.moving_direction == -1):
+        if  (pressed_keys[pygame.K_RIGHT] == False and self.player.moving_direction == 1) or (pressed_keys[pygame.K_LEFT] == False and self.player.moving_direction == -1):
             self.player.run_acceleration=0
 
 
