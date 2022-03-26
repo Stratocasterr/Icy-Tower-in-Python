@@ -8,4 +8,3 @@ class AppConfig():
     SCREEN_HEIGHT: int = 800
     PLAYER_WIDTH: int = 20
     PLAYER_HEIGHT: int = 60
-    GRAVITY: int = 1
