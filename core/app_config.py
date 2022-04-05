@@ -9,7 +9,7 @@ class AppConfig():
     PLAYER_WIDTH: int = 20
     PLAYER_HEIGHT: int = 60
     
-    PLATFORM_NUMBER: int = 15
+    PLATFORM_PLATFORMS_TO_GENERATE: int = 15   # <-liczba 1 razowo generowanyc platform
     PLATFORM_HEIGHT: int = 25
     # Should be multiplied platform part width
     MAX_PLATFORM_WIDTH: int = 250
@@ -19,7 +19,7 @@ class AppConfig():
 
     CAMERA_START_GAME: int = 600
     CAMERA_SPEED: int = 2         
-    CAMERA_ACCELERATION: int = 0.5  #losowa liczba do popr  
+    CAMERA_ACCELERATION: int = 0.5  # losowa liczba do popr  
     CAMERA_NEXT_HEIGHT: int = 150
     
     GRAVITY: int = 1

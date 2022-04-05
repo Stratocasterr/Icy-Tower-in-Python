@@ -60,10 +60,10 @@ class Player:
 class GameView:
     def __init__(self):
         self.is_running = True
-        self.platforms = self.create_platforms(AppConfig.PLATFORM_NUMBER)
+        self.platforms = self.create_platforms(AppConfig.PLATFORM_PLATFORMS_TO_GENERATE)
         self.player = Player(starting_x=400, starting_y=800)
         self.background = pygame.transform.scale(AppAssets.background, (800,800))
-        self.ramka = pygame.transform.scale(AppAssets.ramka, (40,800))
+        self.frame = pygame.transform.scale(AppAssets.frame, (40,800))
         self.background_speeed = 0
         self.height = -800
         self.game_loop()
@@ -82,11 +82,11 @@ class GameView:
 
         WIN.fill(AppColors.WHITE)
         WIN.blit(self.background, (40,self.background_speeed))
-        WIN.blit(self.ramka, (0,self.background_speeed))
-        WIN.blit(self.ramka, (840,self.background_speeed))
+        WIN.blit(self.frame, (0,self.background_speeed))
+        WIN.blit(self.frame, (840,self.background_speeed))
         WIN.blit(self.background, (40,self.height + self.background_speeed))
-        WIN.blit(self.ramka, (0,self.height + self.background_speeed))
-        WIN.blit(self.ramka, (840,self.height + self.background_speeed))
+        WIN.blit(self.frame, (0,self.height + self.background_speeed))
+        WIN.blit(self.frame, (840,self.height + self.background_speeed))
         
         
         if self.background_speeed >= -self.height:
@@ -126,11 +126,6 @@ class GameView:
         for platform_index in range(number):
             _platforms.append(Platform(platform_index))
         return _platforms              
-    
-    def create_1_platforms(self):
-        _platforms = 0
-        _platforms=Platform(1)
-        return _platforms   
 
     def handle_pressed_keys(self):
         pressed_keys = pygame.key.get_pressed()
@@ -178,24 +173,22 @@ class GameView:
         actual_height = self.player.rect.y
         
         if actual_height <  AppConfig.CAMERA_START_GAME:
-            for x in range(15):                                              #<----- tyu wlozyc przesuwanie tla i ramki
+            for x in range(15):                                             
                 self.platforms[x].pos[1] += AppConfig.CAMERA_SPEED
             AppConfig.CAMERA_START_GAME = inf
             #self.player.rect.y += AppConfig.CAMERA_SPEED
             self.background_speeed += AppConfig.CAMERA_SPEED
 
         if actual_height < AppConfig.CAMERA_NEXT_HEIGHT:                
-            self.player.jump_speed=0
+            self.player.jump_speed = 0
             #self.platforms.append(Platform(AppConfig.PLATFORM_NUMBER+1))   <----- tyu wlozyc generacje platform(ta zakomentowana nie dzialac!)
             #AppConfig.PLATFORM_NUMBER += 1
-            self.background_speeed +=40
+            self.background_speeed += 40
             for x in range(15):
                 self.platforms[x].pos[1] += 40   
-            
-            
+
         else:   
-            cos=0
-            self.player.jump_speed=40    
+            self.player.jump_speed = 40    
    
         
 def main():
