@@ -95,9 +95,6 @@ class GameView:
             self.platforms_rects.append(platform.draw_platform())
 
         WIN.blit(self.player.image, (self.player.rect.x, self.player.rect.y))
-
-        #pygame.draw.rect(WIN,(255,0,0),self.player.rect)
-
         pygame.display.update()
 
 
@@ -105,8 +102,6 @@ class GameView:
         for i in range(len(platforms_rects)):
             if player_rect.colliderect(platforms_rects[i]):
                 if abs(platforms_rects[i].top - player_rect.bottom) < self.player.gravity:
-
-
                     self.player.gravity = 0
                     player_rect.y = platforms_rects[i].y - self.player.height
 
@@ -114,8 +109,6 @@ class GameView:
     # Gravity
     def gravity(self):
         previous_y = self.player.rect.y
-
-
         if self.player.rect.y < AppConfig.SCREEN_HEIGHT - AppConfig.PLAYER_HEIGHT:
             self.player.rect.y += self.player.gravity
 
@@ -129,7 +122,6 @@ class GameView:
             self.player.gravity = AppConfig.GRAVITY
 
 
-
     def handle_events(self):
         for event in pygame.event.get():
             #print(event)
@@ -139,11 +131,8 @@ class GameView:
                 
     def create_platforms(self):
         _platforms = []
-
         for platform_index in range(15):
             _platforms.append(Platform(platform_index))
-
-
         return _platforms
 
 
