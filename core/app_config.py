@@ -8,7 +8,7 @@ class AppConfig():
     SCREEN_HEIGHT: int = 800
     PLAYER_WIDTH: int = 20
     PLAYER_HEIGHT: int = 60
-    
+    JUMP_SPEED: int = 20
     PLATFORMS_TO_GENERATE: int = 100   # liczba 1 razowo generowanyc platform
     PLATFORM_HEIGHT: int = 25
     # Should be multiplied platform part width
