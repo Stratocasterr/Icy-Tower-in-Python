@@ -1,3 +1,4 @@
+from cmath import inf
 import pygame
 import random
 from core.app_assets import AppAssets
@@ -65,9 +66,14 @@ class Player:
 class GameView:
     def __init__(self):
         self.is_running = True
-        self.platforms = self.create_platforms()
-        self.player = Player(starting_x=400, starting_y=600)
+        self.platforms = self.create_platforms(AppConfig.PLATFORM_PLATFORMS_TO_GENERATE)
+        self.player = Player(starting_x=400, starting_y=800)
+        self.background = pygame.transform.scale(AppAssets.background, (800,800))
+        self.frame = pygame.transform.scale(AppAssets.frame, (40,800))
+        self.background_speeed = 0
+        self.height = -800
         self.game_loop()
+        
 
     def game_loop(self):
         while self.is_running:
@@ -76,12 +82,23 @@ class GameView:
             self.handle_events()
             self.handle_pressed_keys()
             self.redraw_window()
-            self.collision_detection(self.player.rect,self.platforms_rects)
-
-
+            self.Camera_movement()  
+              
     def redraw_window(self):
+        self.collision_detection(self.player.rect,self.platforms_rects)
         self.platforms_rects=[]
         WIN.fill(AppColors.WHITE)
+        WIN.blit(self.background, (40,self.background_speeed))
+        WIN.blit(self.frame, (0,self.background_speeed))
+        WIN.blit(self.frame, (840,self.background_speeed))
+        WIN.blit(self.background, (40,self.height + self.background_speeed))
+        WIN.blit(self.frame, (0,self.height + self.background_speeed))
+        WIN.blit(self.frame, (840,self.height + self.background_speeed))
+        
+        
+        if self.background_speeed >= -self.height:
+            self.background_speeed = 0
+        
         for platform in self.platforms:
             platform.draw_platform()
             self.platforms_rects.append(platform.draw_platform())
@@ -121,12 +138,12 @@ class GameView:
                 self.is_running = False
                 
                 
-    def create_platforms(self):
+    def create_platforms(self, number_of_latforms):
         _platforms = []
-        for platform_index in range(15):
+        for platform_index in range(number_of_latforms):
             _platforms.append(Platform(platform_index))
         return _platforms
-
+      
 
     def handle_pressed_keys(self):
         pressed_keys = pygame.key.get_pressed()
@@ -168,7 +185,30 @@ class GameView:
         if (pressed_keys[pygame.K_RIGHT] == False and self.player.moving_direction == 1) or (
                 pressed_keys[pygame.K_LEFT] == False and self.player.moving_direction == -1):
             self.player.run_acceleration = 0
+            #self.platforms.pos = 0 #stop platformy i h
+    
+    def Camera_movement(self):
+        actual_height = self.player.rect.y
+        
+        if actual_height <  AppConfig.CAMERA_START_GAME:
+            for x in range(15):                                             
+                self.platforms[x].pos[1] += AppConfig.CAMERA_SPEED
+            AppConfig.CAMERA_START_GAME = inf
+            #self.player.rect.y += AppConfig.CAMERA_SPEED
+            self.background_speeed += AppConfig.CAMERA_SPEED
 
+        if actual_height < AppConfig.CAMERA_NEXT_HEIGHT:                
+            self.player.jump_speed = 0
+            #self.platforms.append(Platform(AppConfig.PLATFORM_NUMBER+1))   <----- tyu wlozyc generacje platform(ta zakomentowana nie dzialac!)
+            #AppConfig.PLATFORM_NUMBER += 1
+            self.background_speeed += 40
+            for x in range(15):
+                self.platforms[x].pos[1] += 40   
+
+        else:   
+            self.player.jump_speed = 40    
+   
+        
 def main():
     validate_values()
     GameView()
