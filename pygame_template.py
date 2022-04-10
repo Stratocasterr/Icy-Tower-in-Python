@@ -2,7 +2,6 @@ from cmath import inf
 import pygame
 import random
 from core.app_assets import AppAssets
-
 from core.app_colors import AppColors
 from core.app_config import AppConfig
 from core.app_values_validator import validate_values
@@ -25,7 +24,10 @@ class Platform:
         self.length = random.randrange(AppConfig.MIN_PLATFORM_WIDTH, AppConfig.MAX_PLATFORM_WIDTH, AppConfig.PLATFORM_PART_WIDTH)
         self.middle_part_quantity = (self.length - 2 * AppConfig.PLATFORM_PART_WIDTH) // AppConfig.PLATFORM_PART_WIDTH
         self.pos = self.get_initial_pos()
-        
+
+        self.platform_rect = pygame.Rect(self.pos[0],self.pos[1], self.length,AppConfig.PLATFORM_HEIGHT)
+
+
     def get_initial_pos(self):
         _pos_y = (AppConfig.SCREEN_HEIGHT - AppConfig.PLATFORM_HEIGHT) - self.index * AppConfig.DISTANCE_BETWEEN_PLATFORMS
         return [random.randint(0, AppConfig.SCREEN_WIDTH - self.length), _pos_y]
@@ -33,9 +35,12 @@ class Platform:
     def draw_platform(self):
         WIN.blit(self.image_left, (self.pos[0], self.pos[1]))
         # Counts the position where the next middle part should be placed
+
         for index in range(1, self.middle_part_quantity + 1):
             WIN.blit(self.image_middle, (self.pos[0] + index * AppConfig.PLATFORM_PART_WIDTH, self.pos[1]))
+
         WIN.blit(self.image_right, (self.pos[0] + self.length - AppConfig.PLATFORM_PART_WIDTH, self.pos[1]))
+        return pygame.Rect(self.pos[0],self.pos[1],self.length, AppConfig.PLATFORM_HEIGHT)
             
 
 class Player:
@@ -47,11 +52,12 @@ class Player:
         self.image = AppAssets.player
         self.gravity = AppConfig.GRAVITY
         self.run_speed = 1
-        self.jump_speed = 40
+        self.jump_speed = 30
         self.run_acceleration = 0
 
         # Right :1 / Left :-1
         self.moving_direction = 0
+
 
     def get_pygame_rect(self):
         return pygame.rect(self.pos[0], self.pos[1], self.width, self.height)
@@ -79,7 +85,8 @@ class GameView:
             self.Camera_movement()  
               
     def redraw_window(self):
-
+        self.collision_detection(self.player.rect,self.platforms_rects)
+        self.platforms_rects=[]
         WIN.fill(AppColors.WHITE)
         WIN.blit(self.background, (40,self.background_speeed))
         WIN.blit(self.frame, (0,self.background_speeed))
@@ -94,9 +101,18 @@ class GameView:
         
         for platform in self.platforms:
             platform.draw_platform()
-        
+            self.platforms_rects.append(platform.draw_platform())
+
         WIN.blit(self.player.image, (self.player.rect.x, self.player.rect.y))
         pygame.display.update()
+
+
+    def collision_detection(self,player_rect, platforms_rects ):
+        for i in range(len(platforms_rects)):
+            if player_rect.colliderect(platforms_rects[i]):
+                if abs(platforms_rects[i].top - player_rect.bottom) < self.player.gravity:
+                    self.player.gravity = 0
+                    player_rect.y = platforms_rects[i].y - self.player.height
 
 
     # Gravity
@@ -110,13 +126,14 @@ class GameView:
 
         if previous_y != self.player.rect.y:
             self.player.gravity += 1
+
         else:
             self.player.gravity = AppConfig.GRAVITY
 
 
     def handle_events(self):
         for event in pygame.event.get():
-            print(event)
+            #print(event)
             if event.type == pygame.QUIT:
                 self.is_running = False
                 
@@ -125,7 +142,8 @@ class GameView:
         _platforms = []
         for platform_index in range(number_of_latforms):
             _platforms.append(Platform(platform_index))
-        return _platforms              
+        return _platforms
+      
 
     def handle_pressed_keys(self):
         pressed_keys = pygame.key.get_pressed()
@@ -198,5 +216,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
