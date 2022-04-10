@@ -1,7 +1,6 @@
 import pygame
 import random
 from core.app_assets import AppAssets
-
 from core.app_colors import AppColors
 from core.app_config import AppConfig
 from core.app_values_validator import validate_values
@@ -26,7 +25,6 @@ class Platform:
         self.pos = self.get_initial_pos()
 
         self.platform_rect = pygame.Rect(self.pos[0],self.pos[1], self.length,AppConfig.PLATFORM_HEIGHT)
-
 
 
     def get_initial_pos(self):
@@ -60,10 +58,6 @@ class Player:
         self.moving_direction = 0
 
 
-
-
-
-
     def get_pygame_rect(self):
         return pygame.rect(self.pos[0], self.pos[1], self.width, self.height)
 
@@ -77,14 +71,12 @@ class GameView:
 
     def game_loop(self):
         while self.is_running:
-
             CLOCK.tick(AppConfig.FPS)
             self.gravity()
             self.handle_events()
             self.handle_pressed_keys()
             self.redraw_window()
             self.collision_detection(self.player.rect,self.platforms_rects)
-
 
 
     def redraw_window(self):
@@ -184,5 +176,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
