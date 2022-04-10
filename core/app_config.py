@@ -9,7 +9,7 @@ class AppConfig():
     PLAYER_WIDTH: int = 20
     PLAYER_HEIGHT: int = 60
     
-    PLATFORM_PLATFORMS_TO_GENERATE: int = 15   # <-liczba 1 razowo generowanyc platform
+    PLATFORM_PLATFORMS_TO_GENERATE: int = 15   # liczba 1 razowo generowanyc platform
     PLATFORM_HEIGHT: int = 25
     # Should be multiplied platform part width
     MAX_PLATFORM_WIDTH: int = 250
