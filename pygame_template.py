@@ -52,7 +52,7 @@ class Player:
         self.image = AppAssets.player
         self.gravity = AppConfig.GRAVITY
         self.run_speed = 1
-        self.jump_speed = 30
+        self.jump_speed = AppConfig.JUMP_SPEED
         self.run_acceleration = 0
 
         # Right :1 / Left :-1
@@ -82,7 +82,8 @@ class GameView:
             self.handle_events()
             self.handle_pressed_keys()
             self.redraw_window()
-            self.Camera_movement()  
+            self.Camera_movement()
+            self.collision_detection()
               
     def redraw_window(self):
         self.platforms_rects= []
@@ -110,9 +111,9 @@ class GameView:
     def collision_detection(self):
         for i in range(len(self.platforms_rects)):
             if self.player.rect.colliderect(self.platforms_rects[i]):
-                if abs(self.platforms.rects[i].top - self.player.rect.bottom) < self.player.gravity:
+                if abs(self.platforms_rects[i].top - self.player.rect.bottom) < self.player.gravity:
                     self.player.gravity = 0
-                    self.player.rect.y = self.platforms.rects[i].y - self.player.height
+                    self.player.rect.y = self.platforms_rects[i].y - self.player.height
 
 
     # Gravity
@@ -133,7 +134,6 @@ class GameView:
 
     def handle_events(self):
         for event in pygame.event.get():
-            #print(event)
             if event.type == pygame.QUIT:
                 self.is_running = False
                 
@@ -185,7 +185,7 @@ class GameView:
         if (pressed_keys[pygame.K_RIGHT] == False and self.player.moving_direction == 1) or (
                 pressed_keys[pygame.K_LEFT] == False and self.player.moving_direction == -1):
             self.player.run_acceleration = 0
-            #self.platforms.pos = 0 #stop platformy i h
+        #self.platforms.pos = 0 #stop platformy i h
     
     def Camera_movement(self):
         actual_height = self.player.rect.y
@@ -203,7 +203,7 @@ class GameView:
                 self.platforms[x].pos[1] += 40   
 
         else:   
-            self.player.jump_speed = 40    
+            self.player.jump_speed = AppConfig.JUMP_SPEED
    
         
 def main():
