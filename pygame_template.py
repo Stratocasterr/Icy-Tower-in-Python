@@ -20,17 +20,15 @@ class Platform:
         self.image_left = pygame.transform.scale(AppAssets.left_platform_edge, (AppConfig.PLATFORM_PART_WIDTH, AppConfig.PLATFORM_HEIGHT))
         self.image_middle = pygame.transform.scale(AppAssets.middle_platform_part, (AppConfig.PLATFORM_PART_WIDTH, AppConfig.PLATFORM_HEIGHT))
         self.image_right = pygame.transform.scale(AppAssets.right_platform_edge, (AppConfig.PLATFORM_PART_WIDTH, AppConfig.PLATFORM_HEIGHT))
-        
-        self.length = random.randrange(AppConfig.MIN_PLATFORM_WIDTH, AppConfig.MAX_PLATFORM_WIDTH, AppConfig.PLATFORM_PART_WIDTH)
+        self.length = self.get_length()
         self.middle_part_quantity = (self.length - 2 * AppConfig.PLATFORM_PART_WIDTH) // AppConfig.PLATFORM_PART_WIDTH
         self.pos = self.get_initial_pos()
-
         self.platform_rect = pygame.Rect(self.pos[0],self.pos[1], self.length,AppConfig.PLATFORM_HEIGHT)
 
 
     def get_initial_pos(self):
         _pos_y = (AppConfig.SCREEN_HEIGHT - AppConfig.PLATFORM_HEIGHT) - self.index * AppConfig.DISTANCE_BETWEEN_PLATFORMS
-        return [random.randint(0, AppConfig.SCREEN_WIDTH - self.length), _pos_y]
+        return [random.randint(AppConfig.FRAME_WIDTH, AppConfig.SCREEN_WIDTH - self.length - AppConfig.FRAME_WIDTH), _pos_y]
     
     def draw_platform(self):
         WIN.blit(self.image_left, (self.pos[0], self.pos[1]))
@@ -41,6 +39,13 @@ class Platform:
 
         WIN.blit(self.image_right, (self.pos[0] + self.length - AppConfig.PLATFORM_PART_WIDTH, self.pos[1]))
         return pygame.Rect(self.pos[0],self.pos[1],self.length, AppConfig.PLATFORM_HEIGHT)
+    
+    def get_length(self):
+        if self.index % AppConfig.DISTANCE_BETWEEN_LONG_PLATFORMS == 0:
+            return AppConfig.SCREEN_WIDTH - 2 * AppConfig.FRAME_WIDTH
+        else:    
+            return random.randrange(AppConfig.MIN_PLATFORM_WIDTH, AppConfig.MAX_PLATFORM_WIDTH, AppConfig.PLATFORM_PART_WIDTH)
+        
             
 
 class Player:
