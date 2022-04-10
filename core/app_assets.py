@@ -17,3 +17,4 @@ class AppAssets: #"D:\Python_programy\Icy_Tower\Icy-Tower-in-Python\assets"
     start_platform = pygame.image.load("assets/start_platform.png")
     background = pygame.image.load("assets/background.png")
     frame = pygame.image.load("assets/Frame.png")
+    platform_sign = pygame.image.load("assets/platform_sign.png")  # jacek dodaj sobie to
