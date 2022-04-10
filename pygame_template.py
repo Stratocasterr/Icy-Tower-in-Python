@@ -66,7 +66,7 @@ class Player:
 class GameView:
     def __init__(self):
         self.is_running = True
-        self.platforms = self.create_platforms(AppConfig.PLATFORM_PLATFORMS_TO_GENERATE)
+        self.platforms = self.create_platforms(AppConfig.PLATFORMS_TO_GENERATE)
         self.player = Player(starting_x=400, starting_y=800)
         self.background = pygame.transform.scale(AppAssets.background, (800,800))
         self.frame = pygame.transform.scale(AppAssets.frame, (40,800))
@@ -85,8 +85,8 @@ class GameView:
             self.Camera_movement()  
               
     def redraw_window(self):
-        self.collision_detection(self.player.rect,self.platforms_rects)
-        self.platforms_rects=[]
+        self.platforms_rects= []
+        self.collision_detection()
         WIN.fill(AppColors.WHITE)
         WIN.blit(self.background, (40,self.background_speeed))
         WIN.blit(self.frame, (0,self.background_speeed))
@@ -107,12 +107,12 @@ class GameView:
         pygame.display.update()
 
 
-    def collision_detection(self,player_rect, platforms_rects ):
-        for i in range(len(platforms_rects)):
-            if player_rect.colliderect(platforms_rects[i]):
-                if abs(platforms_rects[i].top - player_rect.bottom) < self.player.gravity:
+    def collision_detection(self):
+        for i in range(len(self.platforms_rects)):
+            if self.player.rect.colliderect(self.platforms_rects[i]):
+                if abs(self.platforms.rects[i].top - self.player.rect.bottom) < self.player.gravity:
                     self.player.gravity = 0
-                    player_rect.y = platforms_rects[i].y - self.player.height
+                    self.player.rect.y = self.platforms.rects[i].y - self.player.height
 
 
     # Gravity
@@ -191,18 +191,15 @@ class GameView:
         actual_height = self.player.rect.y
         
         if actual_height <  AppConfig.CAMERA_START_GAME:
-            for x in range(15):                                             
+            for x in range(AppConfig.PLATFORMS_TO_GENERATE):                                             
                 self.platforms[x].pos[1] += AppConfig.CAMERA_SPEED
             AppConfig.CAMERA_START_GAME = inf
-            #self.player.rect.y += AppConfig.CAMERA_SPEED
             self.background_speeed += AppConfig.CAMERA_SPEED
 
         if actual_height < AppConfig.CAMERA_NEXT_HEIGHT:                
             self.player.jump_speed = 0
-            #self.platforms.append(Platform(AppConfig.PLATFORM_NUMBER+1))   <----- tyu wlozyc generacje platform(ta zakomentowana nie dzialac!)
-            #AppConfig.PLATFORM_NUMBER += 1
             self.background_speeed += 40
-            for x in range(15):
+            for x in range(AppConfig.PLATFORMS_TO_GENERATE):
                 self.platforms[x].pos[1] += 40   
 
         else:   
