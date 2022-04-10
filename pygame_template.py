@@ -121,9 +121,9 @@ class GameView:
                 self.is_running = False
                 
                 
-    def create_platforms(self, number):
+    def create_platforms(self, number_of_latforms):
         _platforms = []
-        for platform_index in range(number):
+        for platform_index in range(number_of_latforms):
             _platforms.append(Platform(platform_index))
         return _platforms              
 
