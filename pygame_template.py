@@ -59,7 +59,7 @@ class Player:
         self.jump_speed = AppConfig.JUMP_SPEED
         self.run_acceleration = AppConfig.RUN_ACCELERATION
 
-        # R :1 / Left :-1
+        # Right :1 / Left :-1
         self.moving_direction = 0
         self.jump = False
         self.jump_allow = False
