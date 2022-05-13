@@ -50,10 +50,13 @@ class Platform:
 class Player:
     def __init__(self, starting_x, starting_y):
         self.start_pos = [starting_x, starting_y]
-        self.width = AppConfig.PLAYER_WIDTH
-        self.height = AppConfig.PLAYER_HEIGHT
-        self.rect = pygame.Rect(starting_x, starting_y, self.width, self.height)
+
         self.image = AppAssets.player
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
+
+        self.rect = pygame.Rect(starting_x, starting_y, self.width, self.height)
+
         self.gravity = AppConfig.GRAVITY
         self.run_speed = AppConfig.RUN_SPEED
         self.jump_speed = AppConfig.JUMP_SPEED
@@ -65,7 +68,7 @@ class Player:
         self.jump_allow = False
         self.odbijanko = False
         self.collision = False
-
+        self.game_is_over = False
     def get_pygame_rect(self):
         return pygame.rect(self.pos[0], self.pos[1], self.width, self.height)
 
@@ -73,30 +76,52 @@ class Player:
 class GameView:
     def __init__(self):
         self.is_running = True
+        self.game_menu = True
         self.platforms = self.create_platforms(AppConfig.PLATFORMS_TO_GENERATE)
         self.player = Player(starting_x=400, starting_y=800)
         self.background = pygame.transform.scale(AppAssets.background, (800, 800))
         self.frame = pygame.transform.scale(AppAssets.frame, (40, 800))
         self.background_speeed = 0
         self.height = -800
+        self.game_is_over_pic = AppAssets.game_is_over_pic
+
+        self.main_menu_pic = AppAssets.main_menu_pic
+        self.main_start_but = AppAssets.main_start_but
+        self.main_help_but = AppAssets.main_help_but
+        self.main_quit_but = AppAssets.main_quit_but
+
+
+        self.gameover_pic = AppAssets.game_is_over_pic
+        self.gameover_backtomenu_but = AppAssets.game_is_over_backtomain_pic
+        self.gameover_tryagain_but = AppAssets.game_is_over_tryagain_pic
+
+
+        while self.game_menu:
+            self.main_menu()
+
         self.game_loop()
 
 
     def game_loop(self):
-        while self.is_running:
-            previous_y = self.player.rect.y
-            CLOCK.tick(AppConfig.FPS)
-            self.redraw_window()
-            self.gravity()
-            self.handle_events()
-            self.handle_pressed_keys()
-            # self.Test_Mode()
-            self.Camera_movement()
 
-            if self.player.collision == False:
-                i = self.collision_detection(self.get_vertical_moving_direction(previous_y))
+        while self.is_running:
+            if self.player.game_is_over:
+                self.gameower_window()
             else:
-                self.collision_time(previous_y,i)
+                #print(self.player.rect.y ,AppConfig.SCREEN_HEIGHT - AppConfig.PLAYER_HEIGHT)
+                previous_y = self.player.rect.y
+                CLOCK.tick(AppConfig.FPS)
+                self.redraw_window()
+                self.gravity()
+                self.handle_events()
+                self.handle_pressed_keys()
+                # self.Test_Mode()
+                self.Camera_movement()
+
+                if self.player.collision == False:
+                    i = self.collision_detection(self.get_vertical_moving_direction(previous_y))
+                else:
+                    self.collision_time(previous_y,i)
 
 
     def redraw_window(self):
@@ -110,6 +135,8 @@ class GameView:
         WIN.blit(self.frame, (0, self.height + self.background_speeed))
         WIN.blit(self.frame, (840, self.height + self.background_speeed))
 
+
+
         if self.background_speeed >= -self.height:
             self.background_speeed = 0
 
@@ -119,6 +146,8 @@ class GameView:
 
         WIN.blit(self.player.image, (self.player.rect.x, self.player.rect.y))
         pygame.display.update()
+
+
 
     def collision_detection(self, vertical_moving_direction):
         for i in self.platforms_rects:
@@ -133,7 +162,7 @@ class GameView:
 
 
     def collision_time(self,previous_y,i):
-            if self.player.rect.x > self.platforms_rects[i].x - AppConfig.PLAYER_WIDTH and self.player.rect.x < self.platforms_rects[i].x + self.platforms_rects[i].width:
+            if self.player.rect.x > self.platforms_rects[i].x - self.player.width and self.player.rect.x < self.platforms_rects[i].x + self.platforms_rects[i].width:
                 self.player.rect.y = self.platforms_rects[i].y - self.player.height
                 self.player.gravity = 0
                 self.player.jump = False
@@ -141,15 +170,17 @@ class GameView:
                 self.player.collision = False
 
 
+
+
     # Gravity
     def gravity(self):
         previous_y = self.player.rect.y
 
-        if self.player.rect.y < AppConfig.SCREEN_HEIGHT - AppConfig.PLAYER_HEIGHT:
+        if self.player.rect.y < AppConfig.SCREEN_HEIGHT :
             self.player.rect.y += self.player.gravity
 
         else:
-            self.player.rect.y = AppConfig.SCREEN_HEIGHT - AppConfig.PLAYER_HEIGHT
+            #self.player.rect.y = AppConfig.SCREEN_HEIGHT - self.player.height
             self.player.jump = False
 
         if previous_y != self.player.rect.y:
@@ -190,8 +221,8 @@ class GameView:
                 else:
                     self.player.rect.x += self.player.run_speed + self.player.run_acceleration
 
-                if self.player.rect.x + self.player.run_speed + self.player.run_acceleration > AppConfig.SCREEN_WIDTH - AppConfig.PLAYER_WIDTH:
-                    self.player.rect.x = AppConfig.SCREEN_WIDTH - AppConfig.PLAYER_WIDTH
+                if self.player.rect.x + self.player.run_speed + self.player.run_acceleration > AppConfig.SCREEN_WIDTH - self.player.width:
+                    self.player.rect.x = AppConfig.SCREEN_WIDTH - self.player.width
                     self.player.run_acceleration = AppConfig.RUN_ACCELERATION
 
                 if self.player.rect.x - (self.player.run_speed + self.player.run_acceleration) < 0:
@@ -202,7 +233,7 @@ class GameView:
 
         else:
             if pressed_keys[pygame.K_RIGHT]:
-                if self.player.rect.x + self.player.run_speed + self.player.run_acceleration > AppConfig.SCREEN_WIDTH - AppConfig.PLAYER_WIDTH:
+                if self.player.rect.x + self.player.run_speed + self.player.run_acceleration > AppConfig.SCREEN_WIDTH - self.player.width:
                     if self.player.jump and self.player.run_acceleration != AppConfig.RUN_ACCELERATION:
                         self.player.odbijanko = True
                     else:
@@ -211,7 +242,7 @@ class GameView:
                 else:
                     self.player.rect.x += self.player.run_speed + self.player.run_acceleration
 
-                if self.player.moving_direction == 1 and self.player.rect.x != AppConfig.SCREEN_WIDTH - AppConfig.PLAYER_WIDTH:
+                if self.player.moving_direction == 1 and self.player.rect.x != AppConfig.SCREEN_WIDTH - self.player.width:
                     self.player.run_acceleration += AppConfig.RUN_ACCELERATION / 3
 
                 else:
@@ -259,6 +290,7 @@ class GameView:
         camera_speed,player_y_dicrease = self.get_camera_speed()
 
         if self.player.rect.y < AppConfig.CAMERA_START_GAME:
+            self.game_over_time()
             for x in range(AppConfig.PLATFORMS_TO_GENERATE):
                 self.platforms[x].pos[1] += camera_speed
             self.player.rect.y += player_y_dicrease
@@ -293,6 +325,82 @@ class GameView:
             self.player.jump_speed = AppConfig.JUMP_SPEED
 
         return [camera_speed , player_y_dicrease ]
+
+    def main_menu(self):
+        picture = self.main_menu_pics()
+
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONUP:
+
+                if picture == self.main_start_but:
+                    self.game_menu = False
+                elif picture == self.main_help_but:
+                    pass
+                elif picture == self.main_quit_but:
+                    self.is_running = False
+                    self.game_menu = False
+
+                pos = pygame.mouse.get_pos()
+
+
+
+        WIN.blit(picture, ((AppConfig.SCREEN_WIDTH - self.main_menu_pic.get_width()) // 2, 0))
+        pygame.display.update()
+
+
+
+    def main_menu_pics(self):
+
+
+        # startgamebutton
+        if pygame.mouse.get_pos()[0] >= 310 and pygame.mouse.get_pos()[0] <= 544 and pygame.mouse.get_pos()[
+            1] >= 430 and pygame.mouse.get_pos()[1] <= 465:
+            picture = self.main_start_but
+
+        # helpbuttom
+        elif pygame.mouse.get_pos()[0] >= 365 and pygame.mouse.get_pos()[0] <= 464 and pygame.mouse.get_pos()[
+            1] >= 492 and pygame.mouse.get_pos()[1] <= 524:
+            picture = self.main_help_but
+
+        # quitbuttom
+        elif pygame.mouse.get_pos()[0] >= 308 and pygame.mouse.get_pos()[0] <= 540 and pygame.mouse.get_pos()[
+            1] >= 550 and pygame.mouse.get_pos()[1] <= 586:
+            picture = self.main_quit_but
+
+        else:
+            picture = self.main_menu_pic
+
+        return picture
+
+
+
+    def game_over_time(self):
+        if self.player.rect.y > AppConfig.SCREEN_HEIGHT:
+            self.player.game_is_over = True
+            print("GameOver")
+
+
+    def gameower_window(self):
+
+        picture = self.gameover_pic
+        WIN.blit(picture, (AppConfig.SCREEN_WIDTH // 2 - self.game_is_over_pic.get_width() // 2,
+                                         AppConfig.SCREEN_HEIGHT // 2 - self.game_is_over_pic.get_height() // 2))
+
+        for event in pygame.event.get():
+            print(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1])
+
+        pygame.display.update()
+
+
+
+        #self.is_running = False
+
+
+
+    def game_over_menu_pics(self):
+        self.gameover_pic = AppAssets.game_is_over_pic
+        self.gameover_backtomenu_but = AppAssets.game_is_over_backtomain_pic
+        self.gameover_tryagain_but = AppAssets.game_is_over_tryagain_pic
 
 
 def main():
