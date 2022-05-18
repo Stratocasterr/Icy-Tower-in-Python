@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-
+from core.app_assets import AppAssets
 
 @dataclass
 class AppConfig():
@@ -8,8 +8,9 @@ class AppConfig():
     SCREEN_WIDTH: int = 880
     SCREEN_HEIGHT: int = 800
     FRAME_WIDTH: int = 40
-    PLAYER_WIDTH: int = 20
-    PLAYER_HEIGHT: int = 60
+
+    PLAYER_WIDTH: int = AppAssets.player.get_width()
+    PLAYER_HEIGHT: int = AppAssets.player.get_height()
     JUMP_SPEED: int = 20
     RUN_SPEED: int = 5
     RUN_ACCELERATION: int = RUN_SPEED / 5
