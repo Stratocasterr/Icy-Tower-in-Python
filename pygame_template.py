@@ -68,15 +68,19 @@ class Player:
         self.jump_allow = False
         self.odbijanko = False
         self.collision = False
-        self.game_is_over = False
+
     def get_pygame_rect(self):
         return pygame.rect(self.pos[0], self.pos[1], self.width, self.height)
 
 
 class GameView:
     def __init__(self):
+
         self.is_running = True
+        self.game_is_running = True
         self.game_menu = True
+        self.game_is_over = False
+
         self.platforms = self.create_platforms(AppConfig.PLATFORMS_TO_GENERATE)
         self.player = Player(starting_x=400, starting_y=800)
         self.background = pygame.transform.scale(AppAssets.background, (800, 800))
@@ -95,20 +99,18 @@ class GameView:
         self.gameover_backtomenu_but = AppAssets.game_is_over_backtomain_pic
         self.gameover_tryagain_but = AppAssets.game_is_over_tryagain_pic
 
-
-        while self.game_menu:
-            self.main_menu()
-
         self.game_loop()
 
 
     def game_loop(self):
 
         while self.is_running:
-            if self.player.game_is_over:
-                self.gameower_window()
-            else:
-                #print(self.player.rect.y ,AppConfig.SCREEN_HEIGHT - AppConfig.PLAYER_HEIGHT)
+
+            if self.game_menu:
+                self.main_menu()
+
+
+            elif self.game_is_running:
                 previous_y = self.player.rect.y
                 CLOCK.tick(AppConfig.FPS)
                 self.redraw_window()
@@ -122,6 +124,12 @@ class GameView:
                     i = self.collision_detection(self.get_vertical_moving_direction(previous_y))
                 else:
                     self.collision_time(previous_y,i)
+
+
+            elif self.player.game_is_over:
+                self.gameower_menu()
+
+
 
 
     def redraw_window(self):
@@ -327,23 +335,25 @@ class GameView:
         return [camera_speed , player_y_dicrease ]
 
     def main_menu(self):
+
         picture = self.main_menu_pics()
 
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONUP:
 
                 if picture == self.main_start_but:
+
+                    self.game_is_running = True
+                   
                     self.game_menu = False
+
                 elif picture == self.main_help_but:
                     pass
                 elif picture == self.main_quit_but:
                     self.is_running = False
                     self.game_menu = False
 
-                pos = pygame.mouse.get_pos()
-
-
-
+        WIN.fill(AppColors.BLACK)
         WIN.blit(picture, ((AppConfig.SCREEN_WIDTH - self.main_menu_pic.get_width()) // 2, 0))
         pygame.display.update()
 
@@ -376,31 +386,56 @@ class GameView:
 
     def game_over_time(self):
         if self.player.rect.y > AppConfig.SCREEN_HEIGHT:
+            self.game_is_running = False
             self.player.game_is_over = True
-            print("GameOver")
 
 
-    def gameower_window(self):
 
-        picture = self.gameover_pic
-        WIN.blit(picture, (AppConfig.SCREEN_WIDTH // 2 - self.game_is_over_pic.get_width() // 2,
-                                         AppConfig.SCREEN_HEIGHT // 2 - self.game_is_over_pic.get_height() // 2))
+
+
+    def gameower_menu(self):
+
+        picture = self.game_over_menu_pics()
+
+
+
 
         for event in pygame.event.get():
-            print(pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1])
+            if event.type == pygame.MOUSEBUTTONUP:
 
+                if picture == self.gameover_tryagain_but:
+                    self.player.game_is_over = False
+                    self.game_is_running = True
+
+                elif picture == self.gameover_backtomenu_but:
+                    self.player.game_is_over = False
+                    self.game_menu = True
+
+        WIN.blit(picture, (AppConfig.SCREEN_WIDTH // 2 - self.game_is_over_pic.get_width() // 2,
+                           AppConfig.SCREEN_HEIGHT // 2 - self.game_is_over_pic.get_height() // 2))
         pygame.display.update()
 
 
 
-        #self.is_running = False
-
-
 
     def game_over_menu_pics(self):
-        self.gameover_pic = AppAssets.game_is_over_pic
-        self.gameover_backtomenu_but = AppAssets.game_is_over_backtomain_pic
-        self.gameover_tryagain_but = AppAssets.game_is_over_tryagain_pic
+
+
+        if pygame.mouse.get_pos()[0] >= 357 and pygame.mouse.get_pos()[0] <= 437 and pygame.mouse.get_pos()[1] >= 488 and pygame.mouse.get_pos()[1] <= 505:
+            return self.gameover_tryagain_but
+
+        # helpbuttom
+        elif pygame.mouse.get_pos()[0] >= 356 and pygame.mouse.get_pos()[0] <= 535 and pygame.mouse.get_pos()[
+            1] >= 529 and pygame.mouse.get_pos()[1] <= 538:
+            return self.gameover_backtomenu_but
+
+
+        else: return self.gameover_pic
+
+
+
+
+
 
 
 def main():
