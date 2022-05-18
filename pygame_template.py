@@ -5,7 +5,8 @@ from core.app_assets import AppAssets
 from core.app_colors import AppColors
 from core.app_config import AppConfig
 from core.app_values_validator import validate_values
-
+pygame.font.init()
+font = pygame.font.Font('freesansbold.ttf', AppConfig.PLATFORM_SIGN_HEIGHT)
 # Initialize basic pygame stuff
 pygame.font.init()
 WIN = pygame.display.set_mode((AppConfig.SCREEN_WIDTH, AppConfig.SCREEN_HEIGHT))
@@ -23,27 +24,73 @@ class Platform:
                                                    (AppConfig.PLATFORM_PART_WIDTH, AppConfig.PLATFORM_HEIGHT))
         self.image_right = pygame.transform.scale(AppAssets.right_platform_edge,
                                                   (AppConfig.PLATFORM_PART_WIDTH, AppConfig.PLATFORM_HEIGHT))
+        self.image_sign = pygame.transform.scale(AppAssets.platform_sign,
+                                                 (AppConfig.PLATFORM_SIGN_WIDTH, AppConfig.PLATFORM_SIGN_HEIGHT))
+
+        self.length = self.get_length()
+        self.image_left = pygame.transform.scale(AppAssets.left_platform_edge,
+                                                 (AppConfig.PLATFORM_PART_WIDTH, AppConfig.PLATFORM_HEIGHT))
+        self.image_middle = pygame.transform.scale(AppAssets.middle_platform_part,
+                                                   (AppConfig.PLATFORM_PART_WIDTH, AppConfig.PLATFORM_HEIGHT))
+        self.image_right = pygame.transform.scale(AppAssets.right_platform_edge,
+                                                  (AppConfig.PLATFORM_PART_WIDTH, AppConfig.PLATFORM_HEIGHT))
 
         self.length = random.randrange(AppConfig.MIN_PLATFORM_WIDTH, AppConfig.MAX_PLATFORM_WIDTH,
                                        AppConfig.PLATFORM_PART_WIDTH)
         self.middle_part_quantity = (self.length - 2 * AppConfig.PLATFORM_PART_WIDTH) // AppConfig.PLATFORM_PART_WIDTH
         self.pos = self.get_initial_pos()
+        self.platform_rect = pygame.Rect(self.pos[0], self.pos[1], self.length, AppConfig.PLATFORM_HEIGHT)
 
         self.platform_rect = pygame.Rect(self.pos[0], self.pos[1], self.length, AppConfig.PLATFORM_HEIGHT)
 
     def get_initial_pos(self):
         _pos_y = (
                              AppConfig.SCREEN_HEIGHT - AppConfig.PLATFORM_HEIGHT) - self.index * AppConfig.DISTANCE_BETWEEN_PLATFORMS
+        return [random.randint(AppConfig.FRAME_WIDTH, AppConfig.SCREEN_WIDTH - self.length - AppConfig.FRAME_WIDTH),
+                _pos_y]
+
+        _pos_y = (
+                         AppConfig.SCREEN_HEIGHT - AppConfig.PLATFORM_HEIGHT) - self.index * AppConfig.DISTANCE_BETWEEN_PLATFORMS
         return [random.randint(0, AppConfig.SCREEN_WIDTH - self.length), _pos_y]
 
     def draw_platform(self):
+        # Draws the left edge of the platform
         WIN.blit(self.image_left, (self.pos[0], self.pos[1]))
+
+        # Counts the position where the next middle part should be placed and draws them
         # Counts the position where the next middle part should be placed
 
         for index in range(1, self.middle_part_quantity + 1):
             WIN.blit(self.image_middle, (self.pos[0] + index * AppConfig.PLATFORM_PART_WIDTH, self.pos[1]))
 
+        # Draws the right edge of the platform
         WIN.blit(self.image_right, (self.pos[0] + self.length - AppConfig.PLATFORM_PART_WIDTH, self.pos[1]))
+
+        self.draw_sign()
+
+        return pygame.Rect(self.pos[0], self.pos[1], self.length, AppConfig.PLATFORM_HEIGHT)
+
+    def draw_sign(self):
+
+        # Draw the sign on every N platform with the platform index
+        if self.index % AppConfig.DISTANCE_BETWEEN_SIGNS == 0 and self.index > 0:
+            _platform_sign_pos_x = self.pos[0] + (self.length - AppConfig.PLATFORM_SIGN_WIDTH) // 2
+            _platform_sign_pos_y = self.pos[1] + (AppConfig.PLATFORM_HEIGHT - AppConfig.PLATFORM_SIGN_HEIGHT) / 2
+
+            platform_sign_text = font.render(str(self.index), True, AppColors.BLACK)
+            _platform_sign_text_pos_x = _platform_sign_pos_x + (
+                        AppConfig.PLATFORM_SIGN_WIDTH - platform_sign_text.get_width()) // 2
+
+            WIN.blit(self.image_sign, (_platform_sign_pos_x, _platform_sign_pos_y))
+            WIN.blit(platform_sign_text, (_platform_sign_text_pos_x, _platform_sign_pos_y))
+
+    def get_length(self):
+        if self.index % AppConfig.DISTANCE_BETWEEN_LONG_PLATFORMS == 0:
+            return AppConfig.SCREEN_WIDTH - 2 * AppConfig.FRAME_WIDTH
+        else:
+            return random.randrange(AppConfig.MIN_PLATFORM_WIDTH, AppConfig.MAX_PLATFORM_WIDTH,
+                                    AppConfig.PLATFORM_PART_WIDTH)
+
         return pygame.Rect(self.pos[0], self.pos[1], self.length, AppConfig.PLATFORM_HEIGHT)
 
 
@@ -82,7 +129,7 @@ class GameView:
         self.game_is_over = False
 
         self.platforms = self.create_platforms(AppConfig.PLATFORMS_TO_GENERATE)
-        self.player = Player(starting_x=400, starting_y=800)
+        self.player = Player(starting_x = AppConfig.SCREEN_WIDTH // 2 , starting_y = AppConfig.SCREEN_HEIGHT // 1.5)
         self.background = pygame.transform.scale(AppAssets.background, (800, 800))
         self.frame = pygame.transform.scale(AppAssets.frame, (40, 800))
         self.background_speeed = 0
@@ -344,7 +391,7 @@ class GameView:
                 if picture == self.main_start_but:
 
                     self.game_is_running = True
-                   
+
                     self.game_menu = False
 
                 elif picture == self.main_help_but:
@@ -404,6 +451,7 @@ class GameView:
             if event.type == pygame.MOUSEBUTTONUP:
 
                 if picture == self.gameover_tryagain_but:
+                    self.restart_game()
                     self.player.game_is_over = False
                     self.game_is_running = True
 
@@ -434,7 +482,11 @@ class GameView:
 
 
 
-
+    def restart_game(self):
+        self.player.rect[0] = AppConfig.SCREEN_WIDTH // 2
+        self.player.rect[1] = AppConfig.SCREEN_HEIGHT // 2
+        self.platforms_rects = []
+        
 
 
 
