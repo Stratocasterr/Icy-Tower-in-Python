@@ -114,6 +114,7 @@ class GameView:
         self.player = Player(starting_x = AppConfig.SCREEN_WIDTH // 2 , starting_y = AppConfig.SCREEN_HEIGHT - AppConfig.PLAYER_HEIGHT - AppConfig.PLATFORM_HEIGHT)
         self.background = pygame.transform.scale(AppAssets.background, (800, 800))
         self.frame = pygame.transform.scale(AppAssets.frame, (40, 800))
+        self.frame_1 = pygame.transform.scale(AppAssets.frame_1, (40, 800))
         self.background_speeed = 0
         self.height = -800
         self.game_is_over_pic = AppAssets.game_is_over_pic
@@ -163,10 +164,10 @@ class GameView:
         # self.collision_detection()
         WIN.fill(AppColors.WHITE)
         WIN.blit(self.background, (40, self.background_speeed))
-        WIN.blit(self.frame, (0, self.background_speeed))
+        WIN.blit(self.frame_1, (0, self.background_speeed))
         WIN.blit(self.frame, (840, self.background_speeed))
         WIN.blit(self.background, (40, self.height + self.background_speeed))
-        WIN.blit(self.frame, (0, self.height + self.background_speeed))
+        WIN.blit(self.frame_1, (0, self.height + self.background_speeed))
         WIN.blit(self.frame, (840, self.height + self.background_speeed))
 
         if self.background_speeed >= -self.height:
