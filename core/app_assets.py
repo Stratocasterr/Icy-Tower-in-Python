@@ -24,6 +24,10 @@ class AppAssets: #"D:\Python_programy\Icy_Tower\Icy-Tower-in-Python\assets"
     game_is_over_pic = pygame.image.load("D:/Python_programy/Icy_Tower/Icy-Tower-in-Python/assets/game_is_over_pic.png")
     game_is_over_backtomain_pic = pygame.image.load("D:/Python_programy/Icy_Tower/Icy-Tower-in-Python/assets/game_is_over_comeback_pic.png")
     game_is_over_tryagain_pic = pygame.image.load("D:/Python_programy/Icy_Tower/Icy-Tower-in-Python/assets/game_is_over_try_again_pic.png")
+
+
+
+
     '''player = pygame.image.load("assets/player1.png")
     player_left = pygame.image.load("assets/player1_left.png")
     player_right = pygame.image.load("assets/player1_right.png")
