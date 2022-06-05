@@ -93,6 +93,7 @@ class Player:
 
         # Right :1 / Left :-1
         self.moving_direction = 0
+        self.stays = True
         self.jump = False
         self.jump_allow = False
         self.odbijanko = False
@@ -121,7 +122,7 @@ class GameView:
 
         self.main_menu_pic = AppAssets.main_menu_pic
         self.main_start_but = AppAssets.main_start_but
-        self.main_help_but = AppAssets.main_help_but
+       # self.main_help_but = AppAssets.main_help_but
         self.main_quit_but = AppAssets.main_quit_but
 
 
@@ -135,6 +136,7 @@ class GameView:
     def game_loop(self):
 
         while self.is_running:
+            print(self.player.moving_direction)
 
             if self.game_menu:
                 self.main_menu()
@@ -177,9 +179,16 @@ class GameView:
             platform.draw_platform()
             self.platforms_rects.append(platform.draw_platform())
 
-        WIN.blit(self.player.image, (self.player.rect.x, self.player.rect.y))
+
+        WIN.blit(self.choose_player_image(), (self.player.rect.x, self.player.rect.y))
         pygame.display.update()
 
+
+    def choose_player_image(self):
+        if not self.player.stays:
+            if self.player.moving_direction == -1 : return AppAssets.player_left
+            elif self.player.moving_direction == 1: return AppAssets.player_right
+        else: return AppAssets.player
 
     def collision_detection(self, vertical_moving_direction):
         for i in self.platforms_rects:
@@ -237,7 +246,7 @@ class GameView:
         pressed_keys = pygame.key.get_pressed()
 
 # Odbijanko
-
+        previous_x = self.player.rect.x
         if self.player.odbijanko:
             if self.player.jump == False:
                 self.player.odbijanko = False
@@ -259,6 +268,8 @@ class GameView:
                     self.player.run_acceleration = AppConfig.RUN_ACCELERATION
 
 # R/L moves + acceleration
+
+
 
         else:
             if pressed_keys[pygame.K_RIGHT]:
@@ -296,6 +307,10 @@ class GameView:
                     self.player.run_acceleration = AppConfig.RUN_ACCELERATION
 
                 self.player.moving_direction = -1
+
+        if previous_x == self.player.rect.x: self.player.stays = True
+        else: self.player.stays = False
+
 
 #Skakanko
 
@@ -383,15 +398,12 @@ class GameView:
 
         # staRtgamebutton
 
+
         if pygame.mouse.get_pos()[0] >= 310 and pygame.mouse.get_pos()[0] <= 544 and pygame.mouse.get_pos()[
-            1] >= 430 and pygame.mouse.get_pos()[1] <= 465:
+            1] >= 352 and pygame.mouse.get_pos()[1] <= 410:
             picture = self.main_start_but
 
-        # helpbuttom
 
-        elif pygame.mouse.get_pos()[0] >= 365 and pygame.mouse.get_pos()[0] <= 464 and pygame.mouse.get_pos()[
-            1] >= 492 and pygame.mouse.get_pos()[1] <= 524:
-            picture = self.main_help_but
 
         # quitbuttom
 
