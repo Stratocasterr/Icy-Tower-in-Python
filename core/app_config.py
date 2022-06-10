@@ -1,5 +1,6 @@
-from dataclasses import dataclass
-
+from dataclasses import dataclass, field
+from core.app_assets import AppAssets
+from typing import Dict
 
 @dataclass
 class AppConfig():
@@ -8,18 +9,20 @@ class AppConfig():
     SCREEN_WIDTH: int = 880
     SCREEN_HEIGHT: int = 800
     FRAME_WIDTH: int = 40
-    PLAYER_WIDTH: int = 20
-    PLAYER_HEIGHT: int = 60
+
+    PLAYER_WIDTH: int = AppAssets.player.get_width()
+    PLAYER_HEIGHT: int = AppAssets.player.get_height()
     JUMP_SPEED: int = 20
     RUN_SPEED: int = 5
     RUN_ACCELERATION: int = RUN_SPEED / 5
 
-    PLATFORMS_TO_GENERATE: int = 101  # liczba 1 razowo generowanyc platform
+    PLATFORMS_TO_GENERATE: int = 300  # liczba 1 razowo generowanyc platform
     PLATFORM_HEIGHT: int = 25
-    # Should be multiplied platform part width
-    MAX_PLATFORM_WIDTH: int = 500
+    
     DISTANCE_BETWEEN_PLATFORMS: int = 200
     PLATFORM_PART_WIDTH: int = 25
+    # Should be multiplied platform part width
+    MAX_PLATFORM_WIDTH: int = 500
     MIN_PLATFORM_WIDTH: int = 10 * PLATFORM_PART_WIDTH
     DISTANCE_BETWEEN_LONG_PLATFORMS: int = 50
     DISTANCE_BETWEEN_SIGNS: int = 10
